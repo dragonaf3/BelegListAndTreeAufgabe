@@ -2,8 +2,11 @@ package tree.implementation
 
 import tree.traits.IntTree
 
-case class NonEmpty(root: Int, left: BinaryTree, right: BinaryTree) extends BinaryTree:
+case class NonEmpty(val elem: Int, left: IntTree, right: IntTree) extends BinaryTree:
+
   override def isEmpty = false
+
+  override def root: Int = elem
 
   override def insert(elem: Int): IntTree =
     if elem < root then NonEmpty(root, left.insert(elem).asInstanceOf[BinaryTree], right)
