@@ -7,36 +7,37 @@ import tree.traits.IntTree
  * This enables creating lists list this: val list = SinglyLinkedIntList(1,2,3)
  * which results in Cons(1,Cons(2,Cons(3,Empty))))
  */
-object BinaryTree :
+object BinaryTree:
   def apply(xs: Int*): BinaryTree =
     def treeInitialization(tree: BinaryTree, xs: Seq[Int]): BinaryTree = xs match
       case Seq() => tree
-      case _     => treeInitialization(tree.insert(xs.head).asInstanceOf[BinaryTree], xs.tail)
+      case _ => treeInitialization(tree.insert(xs.head).asInstanceOf[BinaryTree], xs.tail)
 
     treeInitialization(Empty, xs)
 
-abstract class BinaryTree extends IntTree :
+abstract class BinaryTree extends IntTree:
 
   // Find the node with the next higher value compared to the root node of the binary tree
   def findSuccessor: BinaryTree = this match
     case NonEmpty(_, _, right: NonEmpty) => right.findMin
-    case _ => throw new NoSuchElementException("No successor found")
+    case NonEmpty(_, _, Empty) => throw new Error("No successor found in non-empty tree with no right subtree")
+    case Empty => throw new Error("Cannot find successor in an empty tree")
 
   def findMin: BinaryTree = this match
     case NonEmpty(_, Empty, _) => this
     case NonEmpty(_, left: NonEmpty, _) => left.findMin
-    case _ => throw new NoSuchElementException("Tree is empty")
+    case _ => throw new Error("Tree is empty")
 
   override def delete(i: Int): IntTree = this match
-    case Empty => this
+    case Empty => throw new Error(s"Element $i not found in the tree")
     case NonEmpty(value, left, right) =>
       if i < value then NonEmpty(value, left.delete(i).asInstanceOf[BinaryTree], right.asInstanceOf[BinaryTree])
       else if i > value then NonEmpty(value, left.asInstanceOf[BinaryTree], right.delete(i).asInstanceOf[BinaryTree])
       else (left, right) match
         case (Empty, Empty) => Empty
-        case (Empty, _)     => right
-        case (_, Empty)     => left
-        case _              =>
+        case (Empty, _) => right
+        case (_, Empty) => left
+        case _ =>
           val successor = right.findMin.asInstanceOf[NonEmpty]
           NonEmpty(successor.root, left.asInstanceOf[BinaryTree], right.delete(successor.root).asInstanceOf[BinaryTree])
 
@@ -74,3 +75,7 @@ abstract class BinaryTree extends IntTree :
         case Empty => true
         case NonEmpty(rightValue, _, _) => rightValue > value
       leftCheck && rightCheck && left.isBinaryTree && right.isBinaryTree
+
+  override def height: Int = this match
+    case Empty => -1
+    case NonEmpty(_, left, right) => 1 + Math.max(left.height, right.height)

@@ -13,9 +13,9 @@ case object Empty extends BinaryTree:
 
   override def size: Int = 0
 
-  override def height: Int = 0
+  override def height: Int = -1
 
-  override def delete(i: Int): IntTree = this
+  override def delete(i: Int): IntTree = throw new Error(s"Element $i not found in the tree")
 
   override def map(mapFun: Int => Int): IntTree = this
 
@@ -24,4 +24,3 @@ case object Empty extends BinaryTree:
   override def tree2List: List[Int] = List()
 
   override def isBinaryTree: Boolean = true
-
