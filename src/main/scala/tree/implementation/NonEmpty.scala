@@ -13,9 +13,9 @@ case class NonEmpty(val elem: Int, left: IntTree, right: IntTree) extends Binary
     else if elem < root then left.contains(elem)
     else right.contains(elem)
 
-  override def insert(elem: Int): IntTree =
-    if elem < root then NonEmpty(root, left.insert(elem).asInstanceOf[BinaryTree], right)
-    else if elem > root then NonEmpty(root, left, right.insert(elem).asInstanceOf[BinaryTree])
+  override def insert(i: Int): IntTree =
+    if (i < elem) NonEmpty(elem, left insert i, right)
+    else if (i > elem) NonEmpty(elem, left, right insert i)
     else this
 
   override def size: Int = 1 + left.size + right.size
