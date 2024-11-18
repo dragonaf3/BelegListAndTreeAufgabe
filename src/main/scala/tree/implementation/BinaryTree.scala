@@ -2,16 +2,35 @@ package tree.implementation
 
 import tree.traits.IntTree
 
+/**
+ *
+ * A companion object for the singly linked list.
+ * This enables creating lists list this: val list = SinglyLinkedIntList(1,2,3)
+ * which results in Cons(1,Cons(2,Cons(3,Empty))))
+ */
 object BinaryTree:
+  /** The apply function is a special function in scala.
+   *
+   * It can be invoked with SinglyLinkedIntList.apply(args) or simply SinglyLinkedIntList(args).
+   * This particular implementation of it is also a variadic function, i.e.
+   * a function which accepts one or more arguments of the same type (integers) as parameters.
+   */
+  //inside this method xs is of type Seq[int]
   def apply(xs: Int*): BinaryTree =
     def treeInitialization(tree: BinaryTree, xs: Seq[Int]): BinaryTree = xs match
       case Seq() => tree
+      //: _* results in the sequence being passed as multiple parameters - (1,2,3) instead of Seq[Int]{1,2,3}
       case _ => treeInitialization(tree.insert(xs.head).asInstanceOf[BinaryTree], xs.tail)
 
     treeInitialization(Empty, xs)
 
 abstract class BinaryTree extends IntTree:
 
+  /* Helper function used by the delete-operation
+
+  Function finds the node with the next higher value
+  compared to the root node of the binary tree (see tests)
+  */
   def findSuccessor: BinaryTree = this match
     case Empty => throw new Error("Kann Nachfolger in einem leeren Baum nicht finden")
     case NonEmpty(_, _, Empty) => throw new Error("Kein Nachfolger vorhanden")
@@ -48,7 +67,6 @@ abstract class BinaryTree extends IntTree:
       (minValue, NonEmpty(value, newLeft.asInstanceOf[BinaryTree], right.asInstanceOf[BinaryTree]))
     case Empty => throw new Error("Kann das minimale Element in einem leeren Baum nicht löschen")
 
-  // Rest der Klasse bleibt unverändert
   override def map(mapFun: Int => Int): IntTree = this match
     case Empty => Empty
     case NonEmpty(value, left, right) =>
@@ -89,8 +107,3 @@ abstract class BinaryTree extends IntTree:
         case Empty => true
         case NonEmpty(rightValue, _, _) => rightValue > value
       leftCheck && rightCheck && left.isBinaryTree && right.isBinaryTree
-
-  override def height: Int = this match
-    case Empty => -1
-    case NonEmpty(_, left, right) =>
-      1 + Math.max(left.height, right.height)
